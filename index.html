@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>design nami</title>
+  <style>
+    body { margin: 0; overflow: hidden; background-color: black; }
+    canvas { display: block; }
+    #overlay-text {
+      position: absolute;
+      top: 48px;
+      left: 20px;
+      color: white;
+      font-size: 16px;
+      font-family: sans-serif;
+      white-space: pre-wrap;
+      z-index: 1;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="overlay-text">design nami
+
+
+Sorry, this site is still in preparation.
+We’re deeply engaged in creating what comes next.
+We’ve barely begun to archive our past.
+
+A practice of speculative design —
+questions into the world,
+and prototypes you might want to join.
+
+<u>info@design-nami.net</u></div>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
+  <script>
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 100;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x000000);
+    document.body.appendChild(renderer.domElement);
+
+    const lineWidths = [1, 2, 3, 4];
+    const totalLines = 100;
+
+    const randomInRange = (min, max) => Math.random() * (max - min) + min;
+
+    const randomDirection = (scale) => new THREE.Vector3(
+      Math.random() - 0.5,
+      Math.random() - 0.5,
+      Math.random() - 0.5
+    ).normalize().multiplyScalar(scale);
+
+    for (let i = 0; i < totalLines; i++) {
+      const isShort = Math.random() < 0.7;
+      let length = isShort ? randomInRange(0.5, 3.5) : randomInRange(5, 15);
+      if (length > 15) length *= 0.6;
+
+      const start = new THREE.Vector3(
+        randomInRange(-50, 50),
+        randomInRange(-50, 50),
+        randomInRange(-50, 50)
+      );
+
+      const dir1 = randomDirection(length * randomInRange(0.2, 1.0));
+      const mid1 = new THREE.Vector3().addVectors(start, dir1);
+
+      const dir2 = randomDirection(length * randomInRange(0.2, 1.0));
+      const mid2 = new THREE.Vector3().addVectors(mid1, dir2);
+
+      const shapeType = i % 3;
+      let points;
+
+      if (shapeType === 0) {
+        points = [start, mid1];
+      } else if (shapeType === 1) {
+        points = [start, mid1, mid2];
+      } else {
+        const dir3 = randomDirection(length * randomInRange(0.2, 1.0));
+        const end = new THREE.Vector3().addVectors(mid2, dir3);
+        points = [start, mid1, mid2, end];
+      }
+
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      const material = new THREE.LineBasicMaterial({
+        color: 0xffffff,
+        linewidth: lineWidths[Math.floor(i / 25)]
+      });
+
+      const line = new THREE.Line(geometry, material);
+      scene.add(line);
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      scene.rotation.y += 0.002;
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
