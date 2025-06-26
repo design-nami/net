@@ -2,16 +2,17 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>design nami</title>
+  <title>nami</title>
   <style>
-    body { margin: 0; overflow: hidden; background-color: black; }
+    body { margin: 0; overflow: hidden; background-color: #0040ff; }
     canvas { display: block; }
     #overlay-text {
+      font-size: 24px;
+      line-height: 1.6;
       position: absolute;
-      top: 48px;
-      left: 20px;
+      top: 10px;
+      left: 16px;
       color: white;
-      font-size: 16px;
       font-family: sans-serif;
       white-space: pre-wrap;
       z-index: 1;
@@ -20,8 +21,7 @@
   </style>
 </head>
 <body>
-  <div id="overlay-text">design nami
-
+  <div id="overlay-text"><div style="font-size:48px; line-height:1.2; margin-bottom: 0;">nami</div><div style="font-size:24px; line-height:1.6; margin-top: 0;">Emerge, Amplify, Resonant</div>
 
 Sorry, this site is still in preparation.
 We’re deeply engaged in creating what comes next.
@@ -31,7 +31,16 @@ A practice of speculative design —
 questions into the world,
 and prototypes you might want to join.
 
-<u>info@design-nami.net</u></div>
+＿＿＿
+
+Our process unfolds through 3 layers:
+Emerge - awakening the unseen
+Amplify - gathering momentum
+Resonant - attuning relations
+
+
+<u>info@design-nami.net</u>
+  </div>
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
   <script>
     const scene = new THREE.Scene();
@@ -40,11 +49,11 @@ and prototypes you might want to join.
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(0x000000);
+    renderer.setClearColor(0x0040ff); // 背景色を青に変更
     document.body.appendChild(renderer.domElement);
 
     const lineWidths = [1, 2, 3, 4];
-    const totalLines = 100;
+    const totalLines = 150;
 
     const randomInRange = (min, max) => Math.random() * (max - min) + min;
 
@@ -54,10 +63,29 @@ and prototypes you might want to join.
       Math.random() - 0.5
     ).normalize().multiplyScalar(scale);
 
-    for (let i = 0; i < totalLines; i++) {
+    const rotationSpeeds = [];
+const lines = [];
+for (let i = 0; i < totalLines; i++) {
       const isShort = Math.random() < 0.7;
-      let length = isShort ? randomInRange(0.5, 3.5) : randomInRange(5, 15);
-      if (length > 15) length *= 0.6;
+      let length;
+const sizeSelector = Math.random();
+if (sizeSelector < 0.3) {
+  // Size 1: 極小（4〜6）
+  length = randomInRange(4, 6);
+  rotationSpeeds.push(0.01);
+} else if (sizeSelector < 0.6) {
+  // Size 2: 小（7〜9）
+  length = randomInRange(7, 9);
+  rotationSpeeds.push(0.004);
+} else if (sizeSelector < 0.9) {
+  // Size 3: 中（10〜12）
+  length = randomInRange(10, 12);
+  rotationSpeeds.push(0.002);
+} else {
+  // Size 4: 大（13〜15）
+  length = randomInRange(13, 15);
+  rotationSpeeds.push(0.0008);
+}
 
       const start = new THREE.Vector3(
         randomInRange(-50, 50),
@@ -71,13 +99,19 @@ and prototypes you might want to join.
       const dir2 = randomDirection(length * randomInRange(0.2, 1.0));
       const mid2 = new THREE.Vector3().addVectors(mid1, dir2);
 
-      const shapeType = i % 3;
+      const shapeType = i < 50 ? 1 : i % 4;
       let points;
 
       if (shapeType === 0) {
         points = [start, mid1];
       } else if (shapeType === 1) {
         points = [start, mid1, mid2];
+      } else if (shapeType === 2) {
+        const dir3 = randomDirection(length * randomInRange(0.2, 1.0));
+        const mid3 = new THREE.Vector3().addVectors(mid2, dir3);
+        const dir4 = randomDirection(length * randomInRange(0.2, 1.0));
+        const end = new THREE.Vector3().addVectors(mid3, dir4);
+        points = [start, mid1, mid2, mid3, end];
       } else {
         const dir3 = randomDirection(length * randomInRange(0.2, 1.0));
         const end = new THREE.Vector3().addVectors(mid2, dir3);
@@ -91,12 +125,16 @@ and prototypes you might want to join.
       });
 
       const line = new THREE.Line(geometry, material);
+      line.userData.rotationSpeed = rotationSpeeds[i];
+      lines.push(line);
       scene.add(line);
     }
 
     function animate() {
       requestAnimationFrame(animate);
-      scene.rotation.y += 0.002;
+      lines.forEach(line => {
+        line.rotation.y += line.userData.rotationSpeed;
+      });
       renderer.render(scene, camera);
     }
 
