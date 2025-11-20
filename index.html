@@ -45,7 +45,30 @@
     .save-link{  position:absolute; background:none; border:0; padding:0; margin:0; font:400 14px "Yu Gothic UI","Yu Gothic","Meiryo",sans-serif; color:#000; text-decoration:underline; cursor:pointer; z-index:905; right:24px; z-index:910; top:704px; bottom:auto; }
 
     .microfoot{position:fixed; left:22px; right:auto; top:auto; bottom:16px; text-align:left; z-index:1001; font-size:12px; letter-spacing:.02em; color:#000; pointer-events:none;}
-  </style>
+  
+#mobile-note{ display:none; }
+@media (max-width: 768px){
+  #mobile-note{
+    display:flex;
+    position:fixed;
+    left:50%;
+    top:95px;
+    transform:translateX(-50%);
+    width:312px;
+    height:542px;
+    background:#fff;
+    border:none;
+    padding:8px 10px;
+    text-align:center;
+    font-size:13px;
+    line-height:1.4;
+    z-index:930;
+    pointer-events:none;
+    align-items:center;
+    justify-content:center;
+  }
+}
+</style>
 
 <style id="eraser-cyan-251105n">
 #eraserBtn.active,
@@ -120,6 +143,7 @@
 
     <div class="pill" aria-hidden="true">Doodle Line</div>
     <div class="tagline" id="tagline" aria-label="かいてあそぼう"><span>か</span><span>い</span><span>て</span><span >あ</span><span>そ</span><span>ぼ</span><span>う</span></div>
+        <div id="mobile-note">Sorry, laptop &amp; tablet only.</div>
     <div class="toprule" aria-hidden="true"></div>
   </div>
   <footer class="microfoot" id="microfoot">© Doodle Line — Code as Touch prototype by nami</footer>
@@ -135,28 +159,27 @@
     // 固定 Seat -> Brush（RESET v11-6c）
     const seatOrder = ["A1", "A2", "A3", "B4", "B5", "B6", "C7", "C8", "C9", "D10", "D11", "D12", "E13", "E14", "E15", "F16", "F17", "F18", "G19", "G20", "G21"];
     const FIXED_SEAT_TO_BRUSH = {
-  "A1": "brush.line_fine",
-  "A2": "brush.line_bit",
-  "A3": "brush.line_dash",
-  "B4": "brush.connect_past",
-  "B5": "brush.snap_close",
-  "B6": "brush.fill_gray",
-  "C7": "brush.debris_chips",
-  "C8": "brush.debris_dash",
-  "C9": "brush.stardust",
-  "D10": "brush.seg_wander",
-  "D11": "brush.nib_flat",
-  "D12": "brush.hatch_slash",
-  "E13": "brush.tube_rim",
-  "E14": "brush.tube_neon@E14",
-  "E15": "brush.tube_spine",
-  "F16": "brush.dots_mono",
-  "F17": "brush.ring_var",
-  "F18": "brush.ring_unite",
-  "G19": "brush.confetti",
-  "G20": "brush.sprinkle_cross",
-  "G21": "brush.sprinkle_oval"
-};
+  "A1": "brush.basicThin",
+  "A2": "brush.basicJitter2",
+  "A3": "brush.dashA3",
+  "B4": "brush.facetA3",
+  "B5": "brush.straightE13",
+  "B6": "brush.fillGrayB6",
+  "C7": "brush.debrisF17",
+  "C8": "brush.sprinklesF18",
+  "C9": "brush.sprayBlackF16",
+  "D10": "brush.hatchD10min",
+  "D11": "brush.flatD10",
+  "D12": null,
+  "E13": "brush.bandRim",
+  "E14": "brush.band@E14",
+  "E15": "brush.bandCenter",
+  "F16": "brush.redDotsC7",
+  "F17": "brush.circlesVarC8",
+  "F18": "brush.bigDotsC9",
+  "G19": "brush.snowSquaresC9",
+  "G20": null,
+  "G21": null};
 
     function baseOf(id){ if(!id) return id; return id.replace(/@.*/, ''); }
 
@@ -165,36 +188,37 @@
       const B={color:'#000',width:{min:1,max:1},spacingPx:1};
       function p(o){return JSON.parse(JSON.stringify(o));}
       return {
-        'brush.empty': { params:{} },
-        'brush.bigDotF18_72': { params:{...p(B), width:{min:72,max:72}} },
-        'brush.line_fine':      {params:{...p(B), width:{min:0.5,max:0.5}, spacingPx:0.5}},
-        'brush.line_bit':   {params:{...p(B), width:{min:2,max:2}, spacingPx:1}},
-        'brush.connect_past':        {params:{...p(B), width:{min:4,max:4}, facet:true, facets:12, facetStep:10}},
-        'brush.snap_close':    {params:{...p(B), width:{min:1,max:1}}},
-        'brush.fill_gray':     {params:{...p(B), width:{min:28,max:28}}},
-        'brush.debris_chips':      {params:{...p(B), width:{min:1,max:1}}},
-        'brush.debris_dash':   {params:{...p(B), width:{min:40,max:40}, sprinkles:{lenMin:4,lenMax:24}, spacingPx:1}},
-        'brush.nib_flat':        {params:{...p(B), width:{min:10,max:10}}},
-        'brush.tube_neon':           {params:{...p(B), width:{min:24,max:24}, band:{alphas:[0.15,0.35,0.6,0.95]}}},
-        'brush.tube_neon@E14':       {params:{...p(B), width:{min:24,max:24}, band:{alphas:[0.15,0.35,0.6,0.95]}}},
-        'brush.tube_spine':     {params:{...p(B), width:{min:28,max:28}, band:{alphas:[0.50,0.27,0.24,0.14]}}},
-        'brush.dots_mono':      {params:{...p(B), width:{min:10,max:10}}},
-        'brush.ring_var':   {params:{...p(B), width:{min:1,max:1}, circlesVar:{ bBase:12, basePitch:120, speedGainPitch:0.9, speedCurve:2.0, speedCalib:1.6, strokeChoices:[1,2,3,4] }}},
-        'brush.ring_unite':      {params:{...p(B), width:{min:1,max:1}}},
-        'brush.stardust':  {params:{...p(B), width:{min:40,max:40}}},
-        'brush.tube_rim':        {params:{...p(B), width:{min:24,max:24}, rim:{rimWidthPx:2, outerAlpha:0.35}}},
-        'brush.confetti':  {params:{...p(B), width:{min:1,max:1}, snow:{dot:8}}},
+        'brush.empty':{params:{},
+    'brush.bigDotF18_72': { params:{...p(B), width:{min:72,max:72}} }
+},
+        'brush.basicThin':      {params:{...p(B), width:{min:0.5,max:0.5}, spacingPx:0.5}},
+        'brush.basicJitter2':   {params:{...p(B), width:{min:2,max:2}, spacingPx:1}},
+        'brush.facetA3':        {params:{...p(B), width:{min:4,max:4}, facet:true, facets:12, facetStep:10}},
+        'brush.straightE13':    {params:{...p(B), width:{min:1,max:1}}},
+        'brush.fillGrayB6':     {params:{...p(B), width:{min:28,max:28}}},
+        'brush.debrisF17':      {params:{...p(B), width:{min:1,max:1}}},
+        'brush.sprinklesF18':   {params:{...p(B), width:{min:40,max:40}, sprinkles:{lenMin:4,lenMax:24}, spacingPx:1}},
+        'brush.flatD10':        {params:{...p(B), width:{min:10,max:10}}},
+        'brush.band':           {params:{...p(B), width:{min:24,max:24}, band:{alphas:[0.15,0.35,0.6,0.95]}}},
+        'brush.band@E14':       {params:{...p(B), width:{min:24,max:24}, band:{alphas:[0.15,0.35,0.6,0.95]}}},
+        'brush.bandCenter':     {params:{...p(B), width:{min:28,max:28}, band:{alphas:[0.50,0.27,0.24,0.14]}}},
+        'brush.redDotsC7':      {params:{...p(B), width:{min:10,max:10}}},
+        'brush.circlesVarC8':   {params:{...p(B), width:{min:1,max:1}, circlesVar:{ bBase:12, basePitch:120, speedGainPitch:0.9, speedCurve:2.0, speedCalib:1.6, strokeChoices:[1,2,3,4] }}},
+        'brush.bigDotsC9':      {params:{...p(B), width:{min:1,max:1}}},
+        'brush.sprayBlackF16':  {params:{...p(B), width:{min:40,max:40}}},
+        'brush.bandRim':        {params:{...p(B), width:{min:24,max:24}, rim:{rimWidthPx:2, outerAlpha:0.35}}},
+        'brush.snowSquaresC9':  {params:{...p(B), width:{min:1,max:1}, snow:{dot:8}}},
         // ★ 新規：A3 minimal dashed
-        'brush.line_dash': { params:{...p(B), width:{min:1.2,max:1.2}, dash:{
+        'brush.dashA3': { params:{...p(B), width:{min:1.2,max:1.2}, dash:{
           Lmin:6, Lmax:22, Pmin:30, Pmax:72, marginHead:10, marginTail:10, calibV:1600
         }}},
         // ★ 新規：D10 minimal hatch
-        'brush.hatch_slash': { params:{...p(B), width:{min:1,max:1}, hatch:{
+        'brush.hatchD10min': { params:{...p(B), width:{min:1,max:1}, hatch:{
           angle: Math.PI/4, Lmin:6, Lmax:18, Pmin:16, Pmax:36, offsetN:6, calibV:1600
         }}},
 'brush.vStripesD12': { params:{...p(B), width:{min:1,max:1}, vstripes:{ lenMin:12, lenMax:48, pitch:30 }}},
-'brush.sprinkle_cross': { params:{...p(B), width:{min:1,max:1}, cross:{ size:8, minGap:12 }}},
- 'brush.seg_wander': { params:{...p(B), width:{min:1,max:1}, rseg:{ pitch:40, lenScale:3.6, fracMin:0.5, fracMax:0.6667, stepMul:0.35 }}}
+'brush.crossScatterG20': { params:{...p(B), width:{min:1,max:1}, cross:{ size:8, minGap:12 }}},
+ 'brush.randSegG21': { params:{...p(B), width:{min:1,max:1}, rseg:{ pitch:40, lenScale:3.6, fracMin:0.5, fracMax:0.6667, stepMul:0.35 }}}
 };
     })();
 
@@ -293,7 +317,6 @@
 
     // 消しゴム
     let __eraserActive=false;
-    let __eraserCursorUrl=null;
     function setEraserActive(v){
   try { __eraserActive = !!v; } catch(e){ window.__eraserActive = !!v; }
   var b = document.getElementById('eraserBtn');
@@ -305,42 +328,8 @@
     var htmlLbl = on ? '<span>Doodle<br>かく</span>' : '<span>Erase<br>けす</span>';
     if (b.innerHTML !== htmlLbl) b.innerHTML = htmlLbl;
   }
-  // update canvas cursor
-  try{
-    if (typeof cvs !== 'undefined' && cvs && cvs.style){
-      if (__eraserActive){
-        if (typeof __ensureEraserCursor === 'function'){ __ensureEraserCursor(); }
-        if (__eraserCursorUrl){
-          cvs.style.cursor = 'url(' + __eraserCursorUrl + ') 16 16, crosshair';
-        } else {
-          cvs.style.cursor = 'crosshair';
-        }
-      }else{
-        cvs.style.cursor = 'crosshair';
-      }
-    }
-  }catch(_){}
-
 }
-    
-    function __ensureEraserCursor(){
-      try{
-        if (__eraserCursorUrl) return;
-        const sz = 32;
-        const off = document.createElement('canvas');
-        off.width = sz; off.height = sz;
-        const g = off.getContext('2d');
-        g.clearRect(0,0,sz,sz);
-        g.strokeStyle = '#000';
-        g.lineWidth = 1;
-        const cx = sz/2, cy = sz/2, R = 12;
-        g.beginPath();
-        g.arc(cx, cy, R, Math.PI, 0, false); // upper half-circle
-        g.stroke();
-        __eraserCursorUrl = off.toDataURL('image/png');
-      }catch(_){}
-    }
-function eraseSegment(a,b){
+    function eraseSegment(a,b){
       if(!a||!b) return;
       ctx.save();
       resetStrokeState(ctx);
@@ -356,36 +345,46 @@ function eraseSegment(a,b){
     // Seat/Brush
     let activeSeatIdx=0;
     const seatToBrush = {
-  'A1': 'brush.line_fine',
-  'A2': 'brush.line_bit',
-  'A3': 'brush.line_dash',
-  'B4': 'brush.connect_past',
-  'B5': 'brush.snap_close',
-  'B6': 'brush.fill_gray',
-  'C7': 'brush.debris_chips',
-  'C8': 'brush.debris_dash',
-  'C9': 'brush.stardust',
-  'D10': 'brush.seg_wander',
-  'D11': 'brush.nib_flat',
-  'D12': 'brush.hatch_slash',
-  'E13': 'brush.tube_rim',
-  'E14': 'brush.tube_neon@E14',
-  'E15': 'brush.tube_spine',
-  'F16': 'brush.dots_mono',
-  'F17': 'brush.ring_var',
-  'F18': 'brush.ring_unite',
-  'G19': 'brush.confetti',
-  'G20': 'brush.sprinkle_cross',
-  'G21': 'brush.sprinkle_oval',
+  'A1': 'brush.basicThin',
+  'A2': 'brush.basicJitter2',
+  'A3': 'brush.dashA3',
+  'B4': 'brush.facetA3',
+  'B5': 'brush.straightE13',
+  'B6': 'brush.fillGrayB6',
+  'C7': 'brush.debrisF17',
+  'C8': 'brush.sprinklesF18',
+  'C9': 'brush.sprayBlackF16',
+  'D10': 'brush.randSegG21',
+  'D11': 'brush.flatD10',
+  'D12': 'brush.hatchD10min',
+  'E13': 'brush.bandRim',
+  'E14': 'brush.band@E14',
+  'E15': 'brush.bandCenter',
+  'F16': 'brush.redDotsC7',
+  'F17': 'brush.circlesVarC8',
+  'F18': 'brush.bigDotsC9',
+  'G19': 'brush.snowSquaresC9',
+  'G20': 'brush.crossScatterG20',
+  'G21': 'brush.ellipsesG21',
 };
     
     
     
-        function currentSeat(){ return seatOrder[activeSeatIdx]; }
+    // === overrides (clean) ===
+    try{ }catch(_){ }
+try{ }catch(_){ }
+try{ // Final seat overrides
+    try{ }catch(_){}
+    try{ }catch(_){}
+    try{ }catch(_){}
+ }catch(_){ }
+    function currentSeat(){ return seatOrder[activeSeatIdx]; }
     function currentBrushId(){ const id = seatToBrush[currentSeat()]; return id || 'brush.empty'; }
     function currentCfg(){ const id=currentBrushId(); return BRUSHES[id]?.params || null; }
 
     function ensureBrushState(cfg){ if(!cfg) return; if(!cfg._state) cfg._state={ bigDotsCenters:[], occSnow:new Map(), snowPhase:0, snowDistAcc:0, snowTotal:0, snowP:0.48, bigDotsDist:0, spraySide:1, hatchResid:0, hatchAlt:0, segOut:{remain:0,alt:0,acc:0} }; }
+
+    let __lastSeatSelectAt = 0;
 
     function setActiveSeat(seatIdx){
       activeSeatIdx=seatIdx;
@@ -393,6 +392,7 @@ function eraseSegment(a,b){
       nodes.forEach(n=>n && n.classList && n.classList.remove('active'));
       const t=nodes[activeSeatIdx]; if(t) t.classList.add('active');
       setEraserActive(false);
+      __lastSeatSelectAt = performance.now();
       resetStrokeState(ctx);
       clearOverlay();
     }
@@ -411,32 +411,32 @@ function eraseSegment(a,b){
       function squaresStroke(n,sz){ for(let k=0;k<n;k++){ const x=Math.round(pad+Math.random()*(W-2*pad-sz)); const y=Math.round(pad+Math.random()*(H-2*pad-sz)); g.strokeRect(x+0.5,y+0.5,sz-1,sz-1);}}
       switch(base){
           case 'brush.vStripesD12': if(typeof drawVerticalStripesD12Segment==='function') drawVerticalStripesD12Segment(a,b); else stroke(a,b); return;
-          case 'brush.sprinkle_cross': if(typeof drawCrossScatterG20Segment==='function') drawCrossScatterG20Segment(a,b); else stroke(a,b); return;
-          case 'brush.seg_wander': if(typeof drawRandSegG21Segment==='function') drawRandSegG21Segment(a,b); else stroke(a,b); return;
+          case 'brush.crossScatterG20': if(typeof drawCrossScatterG20Segment==='function') drawCrossScatterG20Segment(a,b); else stroke(a,b); return;
+          case 'brush.randSegG21': if(typeof drawRandSegG21Segment==='function') drawRandSegG21Segment(a,b); else stroke(a,b); return;
           case 'brush.bigDotF18_72': if(typeof drawDotSegment==='function') drawDotSegment(a,b); else stroke(a,b); return;
 
         case 'brush.empty':
           g.strokeStyle='#aaa'; g.lineWidth=1.2;
           for(let i=-H;i<H;i+=8){ g.beginPath(); g.moveTo(0,i+H/2); g.lineTo(W,i+H/2+W); g.stroke(); }
           break;
-        case 'brush.connect_past': line(pad,H-pad,W-pad,pad,2); break;
-        case 'brush.tube_rim': line(pad,H-pad,W-pad,pad,8); g.clearRect(W/2-10,H/2-3,20,6); break;
-        case 'brush.tube_neon': case 'brush.tube_spine': line(pad,H-pad,W-pad,pad,10); break;
-        case 'brush.nib_flat': line(pad,H/2,W-pad,H/2,12); break;
+        case 'brush.facetA3': line(pad,H-pad,W-pad,pad,2); break;
+        case 'brush.bandRim': line(pad,H-pad,W-pad,pad,8); g.clearRect(W/2-10,H/2-3,20,6); break;
+        case 'brush.band': case 'brush.bandCenter': line(pad,H-pad,W-pad,pad,10); break;
+        case 'brush.flatD10': line(pad,H/2,W-pad,H/2,12); break;
         case 'brush.segOutlineD12': for(let y=pad;y<H-pad;y+=10){ line(pad+4,y,W-pad-4,y,2); } break;
-        case 'brush.snap_close': line(pad,H-pad,W-pad,pad,2); break;
+        case 'brush.straightE13': line(pad,H-pad,W-pad,pad,2); break;
         case 'brush.diagHatchD11': for(let y=pad;y<H-pad;y+=12){ line(pad,y,W-pad,y,2); } break;
-        case 'brush.stardust': dots(10); break;
-        case 'brush.debris_chips': dots(8); break;
-        case 'brush.debris_dash': dots(6); break;
-        case 'brush.fill_gray': g.fillStyle='#EAEAEA'; g.fillRect(pad+18,pad+18, W-2*(pad+18), H-2*(pad+18)); break;
-        case 'brush.ring_unite': for(let y=pad; y<H-pad; y+=15){ line(pad+10,y,pad+26,y,4); } break;
-        case 'brush.confetti': squaresStroke(8,8); break;
-        case 'brush.line_dash':
+        case 'brush.sprayBlackF16': dots(10); break;
+        case 'brush.debrisF17': dots(8); break;
+        case 'brush.sprinklesF18': dots(6); break;
+        case 'brush.fillGrayB6': g.fillStyle='#EAEAEA'; g.fillRect(pad+18,pad+18, W-2*(pad+18), H-2*(pad+18)); break;
+        case 'brush.bigDotsC9': for(let y=pad; y<H-pad; y+=15){ line(pad+10,y,pad+26,y,4); } break;
+        case 'brush.snowSquaresC9': squaresStroke(8,8); break;
+        case 'brush.dashA3':
           g.lineCap='butt';
           for(let s=pad; s<W-pad; s+=14){ line(pad, H-pad, pad+Math.min(W-2*pad, s+8), H-pad, 2); }
           break;
-        case 'brush.hatch_slash':
+        case 'brush.hatchD10min':
           g.lineCap='butt';
           for(let y=pad; y<H-pad; y+=10){ line(pad,y,pad+16,y-16,1); }
           break;
@@ -467,7 +467,7 @@ function eraseSegment(a,b){
   'D10': 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iZGVzaWduIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDgwMCA4MDAiPgogIDxkZWZzPgogICAgPHN0eWxlPgogICAgICAuY2xzLTEgewogICAgICAgIHN0cm9rZS13aWR0aDogMHB4OwogICAgICB9CgogICAgICAuY2xzLTEsIC5jbHMtMiB7CiAgICAgICAgZmlsbDogbm9uZTsKICAgICAgfQoKICAgICAgLmNscy0yIHsKICAgICAgICBzdHJva2U6ICMwMDA7CiAgICAgICAgc3Ryb2tlLW1pdGVybGltaXQ6IDEwOwogICAgICAgIHN0cm9rZS13aWR0aDogMTBweDsKICAgICAgfQogICAgPC9zdHlsZT4KICA8L2RlZnM+CiAgPGNpcmNsZSBjbGFzcz0iY2xzLTEiIGN4PSI0MDAiIGN5PSItNDAwIiByPSI0MDAiLz4KICA8Zz4KICAgIDxjaXJjbGUgY2xhc3M9ImNscy0xIiBjeD0iNDAwIiBjeT0iNDAwIiByPSI0MDAiLz4KICAgIDxnPgogICAgICA8bGluZSBjbGFzcz0iY2xzLTIiIHgxPSI2NDAiIHkxPSI0MzIiIHgyPSI0MzIiIHkyPSIzNjgiLz4KICAgICAgPGxpbmUgY2xhc3M9ImNscy0yIiB4MT0iMTYwIiB5MT0iMjgwIiB4Mj0iMjQwIiB5Mj0iNTIwIi8+CiAgICAgIDxsaW5lIGNsYXNzPSJjbHMtMiIgeDE9IjE3NiIgeTE9IjQ3MiIgeDI9IjM2OCIgeTI9IjMyOCIvPgogICAgICA8bGluZSBjbGFzcz0iY2xzLTIiIHgxPSIzOTIiIHkxPSI1MjAiIHgyPSI1NjgiIHkyPSIyODAiLz4KICAgIDwvZz4KICA8L2c+Cjwvc3ZnPg==',
   'D11': 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iZGVzaWduIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDgwMCA4MDAiPgogIDxkZWZzPgogICAgPHN0eWxlPgogICAgICAuY2xzLTEgewogICAgICAgIHN0cm9rZTogIzAwMDsKICAgICAgICBzdHJva2UtbWl0ZXJsaW1pdDogMTA7CiAgICAgICAgc3Ryb2tlLXdpZHRoOiA0MHB4OwogICAgICB9CgogICAgICAuY2xzLTEsIC5jbHMtMiB7CiAgICAgICAgZmlsbDogbm9uZTsKICAgICAgfQoKICAgICAgLmNscy0yIHsKICAgICAgICBzdHJva2Utd2lkdGg6IDBweDsKICAgICAgfQogICAgPC9zdHlsZT4KICA8L2RlZnM+CiAgPGc+CiAgICA8Y2lyY2xlIGNsYXNzPSJjbHMtMiIgY3g9IjQwMCIgY3k9IjQwMCIgcj0iNDAwIi8+CiAgICA8Zz4KICAgICAgPGc+CiAgICAgICAgPGxpbmUgY2xhc3M9ImNscy0xIiB4MT0iMzY4IiB5MT0iMzUyIiB4Mj0iNTI4IiB5Mj0iMzUyIi8+CiAgICAgICAgPGxpbmUgY2xhc3M9ImNscy0xIiB4MT0iNDMyIiB5MT0iNDQ4IiB4Mj0iMjcyIiB5Mj0iNDQ4Ii8+CiAgICAgIDwvZz4KICAgICAgPGc+CiAgICAgICAgPGxpbmUgY2xhc3M9ImNscy0xIiB4MT0iNDY0IiB5MT0iMjcyIiB4Mj0iNTkyIiB5Mj0iMjcyIi8+CiAgICAgICAgPGxpbmUgY2xhc3M9ImNscy0xIiB4MT0iMzM2IiB5MT0iNTI4IiB4Mj0iMjA4IiB5Mj0iNTI4Ii8+CiAgICAgIDwvZz4KICAgICAgPGc+CiAgICAgICAgPGxpbmUgY2xhc3M9ImNscy0xIiB4MT0iNTYwIiB5MT0iMjA4IiB4Mj0iNjI0IiB5Mj0iMjA4Ii8+CiAgICAgICAgPGxpbmUgY2xhc3M9ImNscy0xIiB4MT0iMjQwIiB5MT0iNTkyIiB4Mj0iMTc2IiB5Mj0iNTkyIi8+CiAgICAgIDwvZz4KICAgIDwvZz4KICA8L2c+CiAgPGNpcmNsZSBjbGFzcz0iY2xzLTIiIGN4PSItNDAwIiBjeT0iLTQwMCIgcj0iNDAwIi8+CiAgPGNpcmNsZSBjbGFzcz0iY2xzLTIiIGN4PSItNDAwIiBjeT0iNDAwIiByPSI0MDAiLz4KICA8Y2lyY2xlIGNsYXNzPSJjbHMtMiIgY3g9IjQwMCIgY3k9Ii00MDAiIHI9IjQwMCIvPgo8L3N2Zz4=',
   'D12': 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iZGVzaWduIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDgwMCA4MDAiPgogIDxkZWZzPgogICAgPHN0eWxlPgogICAgICAuY2xzLTEgewogICAgICAgIHN0cm9rZS13aWR0aDogMHB4OwogICAgICB9CgogICAgICAuY2xzLTEsIC5jbHMtMiB7CiAgICAgICAgZmlsbDogbm9uZTsKICAgICAgfQoKICAgICAgLmNscy0yIHsKICAgICAgICBzdHJva2U6ICMwMDA7CiAgICAgICAgc3Ryb2tlLW1pdGVybGltaXQ6IDEwOwogICAgICAgIHN0cm9rZS13aWR0aDogMTBweDsKICAgICAgfQogICAgPC9zdHlsZT4KICA8L2RlZnM+CiAgPGNpcmNsZSBjbGFzcz0iY2xzLTEiIGN4PSItNDAwIiBjeT0iNDAwIiByPSI0MDAiLz4KICA8Y2lyY2xlIGNsYXNzPSJjbHMtMSIgY3g9IjQwMCIgY3k9Ii00MDAiIHI9IjQwMCIvPgogIDxnPgogICAgPGNpcmNsZSBjbGFzcz0iY2xzLTEiIGN4PSI0MDAiIGN5PSI0MDAiIHI9IjQwMCIvPgogICAgPGc+CiAgICAgIDxsaW5lIGNsYXNzPSJjbHMtMiIgeDE9IjY3MiIgeTE9IjQ2NCIgeDI9IjU0NCIgeTI9IjMzNiIvPgogICAgICA8bGluZSBjbGFzcz0iY2xzLTIiIHgxPSI1OTIiIHkxPSI0NjQiIHgyPSI0NjQiIHkyPSIzMzYiLz4KICAgICAgPGxpbmUgY2xhc3M9ImNscy0yIiB4MT0iNDY0IiB5MT0iNDY0IiB4Mj0iMzM2IiB5Mj0iMzM2Ii8+CiAgICAgIDxsaW5lIGNsYXNzPSJjbHMtMiIgeDE9IjMzNiIgeTE9IjQ2NCIgeDI9IjIwOCIgeTI9IjMzNiIvPgogICAgICA8bGluZSBjbGFzcz0iY2xzLTIiIHgxPSIyNTYiIHkxPSI0NjQiIHgyPSIxMjgiIHkyPSIzMzYiLz4KICAgIDwvZz4KICA8L2c+CiAgPGNpcmNsZSBjbGFzcz0iY2xzLTEiIGN4PSItNDAwIiBjeT0iLTQwMCIgcj0iNDAwIi8+Cjwvc3ZnPg==',
-  'brush.hatch_slash': 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iZGVzaWduIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDgwMCA4MDAiPgogIDxkZWZzPgogICAgPHN0eWxlPgogICAgICAuY2xzLTEgewogICAgICAgIHN0cm9rZS13aWR0aDogMHB4OwogICAgICB9CgogICAgICAuY2xzLTEsIC5jbHMtMiB7CiAgICAgICAgZmlsbDogbm9uZTsKICAgICAgfQoKICAgICAgLmNscy0yIHsKICAgICAgICBzdHJva2U6ICMwMDA7CiAgICAgICAgc3Ryb2tlLW1pdGVybGltaXQ6IDEwOwogICAgICAgIHN0cm9rZS13aWR0aDogMTBweDsKICAgICAgfQogICAgPC9zdHlsZT4KICA8L2RlZnM+CiAgPGNpcmNsZSBjbGFzcz0iY2xzLTEiIGN4PSItNDAwIiBjeT0iNDAwIiByPSI0MDAiLz4KICA8Y2lyY2xlIGNsYXNzPSJjbHMtMSIgY3g9IjQwMCIgY3k9Ii00MDAiIHI9IjQwMCIvPgogIDxnPgogICAgPGNpcmNsZSBjbGFzcz0iY2xzLTEiIGN4PSI0MDAiIGN5PSI0MDAiIHI9IjQwMCIvPgogICAgPGc+CiAgICAgIDxsaW5lIGNsYXNzPSJjbHMtMiIgeDE9IjY3MiIgeTE9IjQ2NCIgeDI9IjU0NCIgeTI9IjMzNiIvPgogICAgICA8bGluZSBjbGFzcz0iY2xzLTIiIHgxPSI1OTIiIHkxPSI0NjQiIHgyPSI0NjQiIHkyPSIzMzYiLz4KICAgICAgPGxpbmUgY2xhc3M9ImNscy0yIiB4MT0iNDY0IiB5MT0iNDY0IiB4Mj0iMzM2IiB5Mj0iMzM2Ii8+CiAgICAgIDxsaW5lIGNsYXNzPSJjbHMtMiIgeDE9IjMzNiIgeTE9IjQ2NCIgeDI9IjIwOCIgeTI9IjMzNiIvPgogICAgICA8bGluZSBjbGFzcz0iY2xzLTIiIHgxPSIyNTYiIHkxPSI0NjQiIHgyPSIxMjgiIHkyPSIzMzYiLz4KICAgIDwvZz4KICA8L2c+CiAgPGNpcmNsZSBjbGFzcz0iY2xzLTEiIGN4PSItNDAwIiBjeT0iLTQwMCIgcj0iNDAwIi8+Cjwvc3ZnPg==',
+  'brush.hatchD10min': 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iZGVzaWduIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDgwMCA4MDAiPgogIDxkZWZzPgogICAgPHN0eWxlPgogICAgICAuY2xzLTEgewogICAgICAgIHN0cm9rZS13aWR0aDogMHB4OwogICAgICB9CgogICAgICAuY2xzLTEsIC5jbHMtMiB7CiAgICAgICAgZmlsbDogbm9uZTsKICAgICAgfQoKICAgICAgLmNscy0yIHsKICAgICAgICBzdHJva2U6ICMwMDA7CiAgICAgICAgc3Ryb2tlLW1pdGVybGltaXQ6IDEwOwogICAgICAgIHN0cm9rZS13aWR0aDogMTBweDsKICAgICAgfQogICAgPC9zdHlsZT4KICA8L2RlZnM+CiAgPGNpcmNsZSBjbGFzcz0iY2xzLTEiIGN4PSItNDAwIiBjeT0iNDAwIiByPSI0MDAiLz4KICA8Y2lyY2xlIGNsYXNzPSJjbHMtMSIgY3g9IjQwMCIgY3k9Ii00MDAiIHI9IjQwMCIvPgogIDxnPgogICAgPGNpcmNsZSBjbGFzcz0iY2xzLTEiIGN4PSI0MDAiIGN5PSI0MDAiIHI9IjQwMCIvPgogICAgPGc+CiAgICAgIDxsaW5lIGNsYXNzPSJjbHMtMiIgeDE9IjY3MiIgeTE9IjQ2NCIgeDI9IjU0NCIgeTI9IjMzNiIvPgogICAgICA8bGluZSBjbGFzcz0iY2xzLTIiIHgxPSI1OTIiIHkxPSI0NjQiIHgyPSI0NjQiIHkyPSIzMzYiLz4KICAgICAgPGxpbmUgY2xhc3M9ImNscy0yIiB4MT0iNDY0IiB5MT0iNDY0IiB4Mj0iMzM2IiB5Mj0iMzM2Ii8+CiAgICAgIDxsaW5lIGNsYXNzPSJjbHMtMiIgeDE9IjMzNiIgeTE9IjQ2NCIgeDI9IjIwOCIgeTI9IjMzNiIvPgogICAgICA8bGluZSBjbGFzcz0iY2xzLTIiIHgxPSIyNTYiIHkxPSI0NjQiIHgyPSIxMjgiIHkyPSIzMzYiLz4KICAgIDwvZz4KICA8L2c+CiAgPGNpcmNsZSBjbGFzcz0iY2xzLTEiIGN4PSItNDAwIiBjeT0iLTQwMCIgcj0iNDAwIi8+Cjwvc3ZnPg==',
   'E13': 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iZGVzaWduIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDgwMCA4MDAiPgogIDxkZWZzPgogICAgPHN0eWxlPgogICAgICAuY2xzLTEgewogICAgICAgIHN0cm9rZS13aWR0aDogMHB4OwogICAgICB9CgogICAgICAuY2xzLTEsIC5jbHMtMiB7CiAgICAgICAgZmlsbDogbm9uZTsKICAgICAgfQoKICAgICAgLmNscy0yIHsKICAgICAgICBzdHJva2U6ICMwMDA7CiAgICAgICAgc3Ryb2tlLW1pdGVybGltaXQ6IDEwOwogICAgICAgIHN0cm9rZS13aWR0aDogMTBweDsKICAgICAgfQogICAgPC9zdHlsZT4KICA8L2RlZnM+CiAgPGc+CiAgICA8Y2lyY2xlIGNsYXNzPSJjbHMtMSIgY3g9IjQwMCIgY3k9IjQwMCIgcj0iNDAwIi8+CiAgICA8cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik01NTYsMzE2SDI0NGMtNDYuMzksMC04NCwzNy42MS04NCw4NHMzNy42MSw4NCw4NCw4NGgzMTJjNDYuMzksMCw4NC0zNy42MSw4NC04NHMtMzcuNjEtODQtODQtODRaIi8+CiAgPC9nPgogIDxjaXJjbGUgY2xhc3M9ImNscy0xIiBjeD0iNDAwIiBjeT0iLTQwMCIgcj0iNDAwIi8+Cjwvc3ZnPg==',
   'E14': 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iZGVzaWduIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDgwMCA4MDAiPgogIDxkZWZzPgogICAgPHN0eWxlPgogICAgICAuY2xzLTEgewogICAgICAgIGZpbGw6IG5vbmU7CiAgICAgIH0KCiAgICAgIC5jbHMtMSwgLmNscy0yLCAuY2xzLTMsIC5jbHMtNCwgLmNscy01IHsKICAgICAgICBzdHJva2Utd2lkdGg6IDBweDsKICAgICAgfQoKICAgICAgLmNscy0yIHsKICAgICAgICBmaWxsOiAjYWFhOwogICAgICB9CgogICAgICAuY2xzLTIsIC5jbHMtMywgLmNscy00LCAuY2xzLTUgewogICAgICAgIGZpbGwtcnVsZTogZXZlbm9kZDsKICAgICAgfQoKICAgICAgLmNscy0zIHsKICAgICAgICBmaWxsOiAjNTU1OwogICAgICB9CgogICAgICAuY2xzLTQgewogICAgICAgIGZpbGw6ICNmZmY7CiAgICAgIH0KCiAgICAgIC5jbHMtNSB7CiAgICAgICAgZmlsbDogIzAwMDsKICAgICAgfQogICAgPC9zdHlsZT4KICA8L2RlZnM+CiAgPGNpcmNsZSBjbGFzcz0iY2xzLTEiIGN4PSI0MDAiIGN5PSItNDAwIiByPSI0MDAiLz4KICA8Zz4KICAgIDxjaXJjbGUgY2xhc3M9ImNscy0xIiBjeD0iNDAwIiBjeT0iNDAwIiByPSI0MDAiLz4KICAgIDxnPgogICAgICA8cGF0aCBjbGFzcz0iY2xzLTUiIGQ9Ik01NTYsMzE2SDI0NGMtNDYuMzksMC04NCwzNy42MS04NCw4NHMzNy42MSw4NCw4NCw4NGgzMTJjNDYuMzksMCw4NC0zNy42MSw4NC04NHMtMzcuNjEtODQtODQtODRaTTU1Niw0NjBIMjQ0Yy0zMy4xNCwwLTYwLTI2Ljg2LTYwLTYwczI2Ljg2LTYwLDYwLTYwaDMxMmMzMy4xNCwwLDYwLDI2Ljg2LDYwLDYwcy0yNi44Niw2MC02MCw2MFoiLz4KICAgICAgPHBhdGggY2xhc3M9ImNscy0zIiBkPSJNNTU2LDM0MEgyNDRjLTMzLjE0LDAtNjAsMjYuODYtNjAsNjBzMjYuODYsNjAsNjAsNjBoMzEyYzMzLjE0LDAsNjAtMjYuODYsNjAtNjBzLTI2Ljg2LTYwLTYwLTYwWk01NTYsNDM2SDI0NGMtMTkuODgsMC0zNi0xNi4xMi0zNi0zNnMxNi4xMi0zNiwzNi0zNmgzMTJjMTkuODgsMCwzNiwxNi4xMiwzNiwzNnMtMTYuMTIsMzYtMzYsMzZaIi8+CiAgICAgIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTU1NiwzNjRIMjQ0Yy0xOS44OCwwLTM2LDE2LjEyLTM2LDM2czE2LjEyLDM2LDM2LDM2aDMxMmMxOS44OCwwLDM2LTE2LjEyLDM2LTM2cy0xNi4xMi0zNi0zNi0zNlpNNTU2LDQxMkgyNDRjLTYuNjMsMC0xMi01LjM3LTEyLTEyczUuMzctMTIsMTItMTJoMzEyYzYuNjMsMCwxMiw1LjM3LDEyLDEycy01LjM3LDEyLTEyLDEyWiIvPgogICAgICA8cGF0aCBjbGFzcz0iY2xzLTQiIGQ9Ik01NTYsMzg4SDI0NGMtNi42MywwLTEyLDUuMzctMTIsMTJzNS4zNywxMiwxMiwxMmgzMTJjNi42MywwLDEyLTUuMzcsMTItMTJzLTUuMzctMTItMTItMTJaIi8+CiAgICA8L2c+CiAgPC9nPgogIDxjaXJjbGUgY2xhc3M9ImNscy0xIiBjeD0iLTQwMCIgY3k9IjQwMCIgcj0iNDAwIi8+CiAgPGNpcmNsZSBjbGFzcz0iY2xzLTEiIGN4PSItNDAwIiBjeT0iLTQwMCIgcj0iNDAwIi8+Cjwvc3ZnPg==',
   'E15': 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iZGVzaWduIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDgwMCA4MDAiPgogIDxkZWZzPgogICAgPHN0eWxlPgogICAgICAuY2xzLTEgewogICAgICAgIGZpbGw6IG5vbmU7CiAgICAgIH0KCiAgICAgIC5jbHMtMSwgLmNscy0yLCAuY2xzLTMgewogICAgICAgIHN0cm9rZS13aWR0aDogMHB4OwogICAgICB9CgogICAgICAuY2xzLTIgewogICAgICAgIGZpbGw6ICNiMGIwYjA7CiAgICAgIH0KCiAgICAgIC5jbHMtMiwgLmNscy0zIHsKICAgICAgICBmaWxsLXJ1bGU6IGV2ZW5vZGQ7CiAgICAgIH0KCiAgICAgIC5jbHMtMyB7CiAgICAgICAgZmlsbDogI2Q4ZDhkODsKICAgICAgfQogICAgPC9zdHlsZT4KICA8L2RlZnM+CiAgPGNpcmNsZSBjbGFzcz0iY2xzLTEiIGN4PSItNDAwIiBjeT0iLTQwMCIgcj0iNDAwIi8+CiAgPGNpcmNsZSBjbGFzcz0iY2xzLTEiIGN4PSItNDAwIiBjeT0iNDAwIiByPSI0MDAiLz4KICA8Zz4KICAgIDxjaXJjbGUgY2xhc3M9ImNscy0xIiBjeD0iNDAwIiBjeT0iNDAwIiByPSI0MDAiLz4KICAgIDxnPgogICAgICA8cGF0aCBjbGFzcz0iY2xzLTMiIGQ9Ik01NTYsMzE2SDI0NGMtNDYuMzksMC04NCwzNy42MS04NCw4NHMzNy42MSw4NCw4NCw4NGgzMTJjNDYuMzksMCw4NC0zNy42MSw4NC04NHMtMzcuNjEtODQtODQtODRaTTU1Niw0NjBIMjQ0Yy0zMy4xNCwwLTYwLTI2Ljg2LTYwLTYwczI2Ljg2LTYwLDYwLTYwaDMxMmMzMy4xNCwwLDYwLDI2Ljg2LDYwLDYwcy0yNi44Niw2MC02MCw2MFoiLz4KICAgICAgPHBhdGggY2xhc3M9ImNscy0yIiBkPSJNNTU2LDM0MEgyNDRjLTMzLjE0LDAtNjAsMjYuODYtNjAsNjBzMjYuODYsNjAsNjAsNjBoMzEyYzMzLjE0LDAsNjAtMjYuODYsNjAtNjBzLTI2Ljg2LTYwLTYwLTYwWk01NTYsNDM2SDI0NGMtMTkuODgsMC0zNi0xNi4xMi0zNi0zNnMxNi4xMi0zNiwzNi0zNmgzMTJjMTkuODgsMCwzNiwxNi4xMiwzNiwzNnMtMTYuMTIsMzYtMzYsMzZaIi8+CiAgICAgIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTU1NiwzNjRIMjQ0Yy0xOS44OCwwLTM2LDE2LjEyLTM2LDM2czE2LjEyLDM2LDM2LDM2aDMxMmMxOS44OCwwLDM2LTE2LjEyLDM2LTM2cy0xNi4xMi0zNi0zNi0zNlpNNTU2LDQxMkgyNDRjLTYuNjMsMC0xMi01LjM3LTEyLTEyczUuMzctMTIsMTItMTJoMzEyYzYuNjMsMCwxMiw1LjM3LDEyLDEycy01LjM3LDEyLTEyLDEyWiIvPgogICAgICA8cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik01NTYsMzg4SDI0NGMtNi42MywwLTEyLDUuMzctMTIsMTJzNS4zNywxMiwxMiwxMmgzMTJjNi42MywwLDEyLTUuMzcsMTItMTJzLTUuMzctMTItMTItMTJaIi8+CiAgICA8L2c+CiAgPC9nPgogIDxjaXJjbGUgY2xhc3M9ImNscy0xIiBjeD0iNDAwIiBjeT0iLTQwMCIgcj0iNDAwIi8+Cjwvc3ZnPg==',
@@ -495,10 +495,7 @@ function getThumbForSeat(seat){
       seatOrder.forEach((seat,i)=>{
         const brushId=seatToBrush[seat] || 'brush.empty';
         const btn=document.createElement('button'); btn.className='thumb'; btn.type='button'; btn.dataset.seat=seat; btn.dataset.index=String(i);
-        const baseId = (typeof baseOf==='function') ? baseOf(brushId||'') : (brushId||'');
-        const label = String(baseId||seat).replace(/^brush\./, '');
-        btn.setAttribute('aria-label', label);
-        btn.title = label;
+        btn.setAttribute('aria-label', seat);
         try{ const svg = getThumbForSeat(seat); if(svg){ btn.style.backgroundImage = 'url('+svg+')'; } else { const img=renderThumbForBrush(brushId); if(img) btn.style.backgroundImage='url('+img+')'; } }catch(_ ){} 
         /* seat label removed per request */
         attachSeatHandlers(btn, i);
@@ -1340,28 +1337,26 @@ function getThumbForSeat(seat){
     }
 // ======== 描画モード定義（base 単位） ========
     const RENDER_MODE = {
-      'brush.tube_neon': 'liveBand',
-      'brush.tube_rim': 'liveBand',
-      'brush.tube_spine': 'liveBand',
-      'brush.ring_unite': 'liveDots',
-      'brush.diagHatchD11': 'liveHatch',
-      'brush.hatch_slash': 'immediate',
-      'brush.line_dash': 'liveDash',
+      'brush.band': 'liveBand',
+      'brush.bandRim': 'liveBand',
+      'brush.bandCenter': 'liveBand',
+      'brush.bigDotsC9': 'liveDots',
+      'brush.diagHatchD11': 'liveHatch',    // 既存(G21)
+      'brush.hatchD10min': 'immediate',    // ★新設（パターン違い）
+      'brush.dashA3': 'liveDash',           // ★新設（破線）
 
-      'brush.fill_gray': 'finishOnly',
-      'brush.vStripesD12': 'immediate',
-      'brush.sprinkle_cross': 'immediate',
-      'brush.seg_wander': 'immediate',
-      'brush.bigDotF18_72': 'immediate',
-      'brush.bigCircleF18_72': 'immediate',
-      'brush.sprinkle_oval': 'immediate'
-};
-function modeOf(base){ return RENDER_MODE[base] || 'immediate'; }
+      'brush.fillGrayB6': 'finishOnly',
+  'brush.vStripesD12': 'immediate',
+  'brush.crossScatterG20': 'immediate',
+  'brush.randSegG21': 'immediate',
+  'brush.bigDotF18_72': 'immediate',
+  'brush.bigCircleF18_72': 'immediate', 'brush.ellipsesG21': 'immediate'}
+    function modeOf(base){ return RENDER_MODE[base] || 'immediate'; }
 
     // ===== Router & stroke control =====
     var drawing=false, pts=[]; var __rafPending=false, __drawIndex=0;
 
-    const FINISH_PREVIEW_BASES = new Set(['brush.fill_gray']);
+    const FINISH_PREVIEW_BASES = new Set(['brush.fillGrayB6']);
 
     function previewOverlaySegment(a,b){
       ovctx.save(); resetStrokeState(ovctx);
@@ -1415,8 +1410,8 @@ function drawSegment(a,b){
         if(mode==='liveBand'){
           if(isLast){
             clearOverlay();
-            if(base==='brush.tube_rim'){ if(typeof overlayBandRim==='function') overlayBandRim(pts); else simplePreview(a,b); }
-            else if(base==='brush.tube_spine'){ if(typeof overlayBandFillCenter==='function') overlayBandFillCenter(pts); else simplePreview(a,b); }
+            if(base==='brush.bandRim'){ if(typeof overlayBandRim==='function') overlayBandRim(pts); else simplePreview(a,b); }
+            else if(base==='brush.bandCenter'){ if(typeof overlayBandFillCenter==='function') overlayBandFillCenter(pts); else simplePreview(a,b); }
             else { if(typeof overlayBand==='function') overlayBand(pts); else simplePreview(a,b); }
           }
           return;
@@ -1448,24 +1443,24 @@ function drawSegment(a,b){
         switch(base){
           case 'brush.bigCircleF18_72': if(typeof drawSingleCircleF18==='function') drawSingleCircleF18(a,b); else stroke(a,b); return;
           case 'brush.bigDotF18_72': if(typeof drawDotSegment==='function') drawDotSegment(a,b); else stroke(a,b); return;
-          case 'brush.hatch_slash': if(typeof drawHatchD10minSegment==='function') drawHatchD10minSegment(a,b); else stroke(a,b); return;
+          case 'brush.hatchD10min': if(typeof drawHatchD10minSegment==='function') drawHatchD10minSegment(a,b); else stroke(a,b); return;
           case 'brush.vStripesD12': if(typeof drawVerticalStripesD12Segment==='function') drawVerticalStripesD12Segment(a,b); else stroke(a,b); return;
-          case 'brush.sprinkle_cross': if(typeof drawCrossScatterG20Segment==='function') drawCrossScatterG20Segment(a,b); else stroke(a,b); return;
-          case 'brush.seg_wander': if(typeof drawRandSegG21Segment==='function') drawRandSegG21Segment(a,b); else stroke(a,b); return;
+          case 'brush.crossScatterG20': if(typeof drawCrossScatterG20Segment==='function') drawCrossScatterG20Segment(a,b); else stroke(a,b); return;
+          case 'brush.randSegG21': if(typeof drawRandSegG21Segment==='function') drawRandSegG21Segment(a,b); else stroke(a,b); return;
 
           case 'brush.empty': return;
-          case 'brush.line_fine': stroke(a,b); return;
-          case 'brush.line_bit': drawLineJitter(a.x,a.y,b.x,b.y,(currentCfg()?.width.min)||1); return;
-          case 'brush.connect_past': if(typeof strokeFaceted==='function') strokeFaceted(a,b); else stroke(a,b); return;
-          case 'brush.dots_mono': if(typeof drawDotSegment==='function') drawDotSegment(a,b); else stroke(a,b); return;
-          case 'brush.ring_var': if(typeof drawCirclesVarSegment==='function'){ ctx.save(); resetStrokeState(ctx); ctx.strokeStyle='#000'; drawCirclesVarSegment(a,b); ctx.restore(); } else { stroke(a,b); } return;
-          case 'brush.nib_flat': if(typeof drawFlat==='function') drawFlat(a,b); else stroke(a,b); return;
-          case 'brush.snap_close': stroke(a,b); return;
-          case 'brush.stardust': if(typeof spraySegment==='function') spraySegment(a,b); else stroke(a,b); return;
-          case 'brush.debris_chips': if(typeof drawDebrisSegment==='function') drawDebrisSegment(a,b); else stroke(a,b); return;
-          case 'brush.debris_dash': if(typeof sprinkleSegment==='function') sprinkleSegment(a,b); else stroke(a,b); return;
-          case 'brush.confetti': if(typeof drawSnowSquaresSegment==='function') drawSnowSquaresSegment(a,b); else stroke(a,b); return;
-          case 'brush.sprinkle_oval': if(typeof drawEllipsesG21Segment==='function') drawEllipsesG21Segment(a,b); else stroke(a,b); return;
+          case 'brush.basicThin': stroke(a,b); return;
+          case 'brush.basicJitter2': drawLineJitter(a.x,a.y,b.x,b.y,(currentCfg()?.width.min)||1); return;
+          case 'brush.facetA3': if(typeof strokeFaceted==='function') strokeFaceted(a,b); else stroke(a,b); return;
+          case 'brush.redDotsC7': if(typeof drawDotSegment==='function') drawDotSegment(a,b); else stroke(a,b); return;
+          case 'brush.circlesVarC8': if(typeof drawCirclesVarSegment==='function'){ ctx.save(); resetStrokeState(ctx); ctx.strokeStyle='#000'; drawCirclesVarSegment(a,b); ctx.restore(); } else { stroke(a,b); } return;
+          case 'brush.flatD10': if(typeof drawFlat==='function') drawFlat(a,b); else stroke(a,b); return;
+          case 'brush.straightE13': stroke(a,b); return;
+          case 'brush.sprayBlackF16': if(typeof spraySegment==='function') spraySegment(a,b); else stroke(a,b); return;
+          case 'brush.debrisF17': if(typeof drawDebrisSegment==='function') drawDebrisSegment(a,b); else stroke(a,b); return;
+          case 'brush.sprinklesF18': if(typeof sprinkleSegment==='function') sprinkleSegment(a,b); else stroke(a,b); return;
+          case 'brush.snowSquaresC9': if(typeof drawSnowSquaresSegment==='function') drawSnowSquaresSegment(a,b); else stroke(a,b); return;
+          case 'brush.ellipsesG21': if(typeof drawEllipsesG21Segment==='function') drawEllipsesG21Segment(a,b); else stroke(a,b); return;
           
           default: stroke(a,b); return;
         }
@@ -1487,16 +1482,16 @@ function drawSegment(a,b){
         resetStrokeState(ctx);
 
         switch(base){
-          case 'brush.tube_rim':
+          case 'brush.bandRim':
             if(mode==='liveBand'){ if(typeof bandRimPath==='function') bandRimPath(pts.slice()); else simpleStrokePath(pts, 8); clearOverlay(); }
             break;
-          case 'brush.tube_neon':
+          case 'brush.band':
             if(mode==='liveBand'){ if(typeof bandPath==='function') bandPath(pts.slice()); else simpleStrokePath(pts, 10); clearOverlay(); }
             break;
-          case 'brush.tube_spine':
+          case 'brush.bandCenter':
             if(mode==='liveBand'){ if(typeof bandPathFillCenter==='function') bandPathFillCenter(pts.slice()); else simpleStrokePath(pts, 10); clearOverlay(); }
             break;
-          case 'brush.ring_unite':
+          case 'brush.bigDotsC9':
             if(mode==='liveDots'){
               const cfg=currentCfg(); if(cfg){ const S=cfg._state||{}; const arr=S.bigDotsCenters||[];
                 if(arr.length && typeof _commitOffscreen==='function'){
@@ -1517,15 +1512,15 @@ function drawSegment(a,b){
           case 'brush.diagHatchD11':
             if(mode==='liveHatch'){ if(typeof drawDiagHatchFinishPath==='function') drawDiagHatchFinishPath(pts.slice()); else if(typeof commitHatchD10==='function') commitHatchD10(pts.slice()); else simpleStrokePath(pts,1); clearOverlay(); }
             break;
-          case 'brush.line_dash':
+          case 'brush.dashA3':
             if(mode==='liveDash'){ if(typeof commitDashA3==='function') commitDashA3(pts.slice()); else simpleStrokePath(pts,2); clearOverlay(); }
             break;
-          case 'brush.hatch_slash':
+          case 'brush.hatchD10min':
             if(mode==='liveHatch2'){ if(typeof commitHatchD10==='function') commitHatchD10(pts.slice()); else simpleStrokePath(pts,1); clearOverlay(); }
             break;
-          case 'brush.snap_close': { const a=pts[0], b=pts[pts.length-1]; if(a&&b) stroke(a,b); break; }
+          case 'brush.straightE13': { const a=pts[0], b=pts[pts.length-1]; if(a&&b) stroke(a,b); break; }
           case 'brush.segOutlineD12': { if(typeof segLinesOutlinePath==='function') segLinesOutlinePath(pts.slice()); else simpleStrokePath(pts,2); break; }
-          case 'brush.fill_gray': { if(typeof fillClosedPath==='function') fillClosedPath(pts.slice(), '#EAEAEA'); else simpleStrokePath(pts, 6); break; }
+          case 'brush.fillGrayB6': { if(typeof fillClosedPath==='function') fillClosedPath(pts.slice(), '#EAEAEA'); else simpleStrokePath(pts, 6); break; }
           default: break;
         }
       } catch(e){ console && console.error && console.error(e); }
@@ -1669,7 +1664,13 @@ function drawSegment(a,b){
     cvs.addEventListener('pointerdown', function(e){
       e.preventDefault(); 
       window.__strokeTick = ((window.__strokeTick|0)+1)|0; resetStrokeState(ctx); resetStrokeState(ovctx);
-            drawing=true; pts.length=0;
+      if(__eraserActive){
+        const now = performance.now();
+        if(now - __lastSeatSelectAt < 2500){
+          setEraserActive(false);
+        }
+      }
+      drawing=true; pts.length=0;
       clearOverlay();
       const r=cvs.getBoundingClientRect(); const t=performance.now(); const p=(e.pressure>0?e.pressure:0.5);
       pts.push({x:e.clientX-r.left, y:e.clientY-r.top, t, p});
