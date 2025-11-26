@@ -339,13 +339,7 @@
       }
     }
 
-    @media (max-width: 960px) {
-      .vline--2 {
-        display: none;
-      }
-    }
-
-    /* <=720px: 縦積みレイアウト（スマホ） */
+        /* <=720px: 縦積みレイアウト（スマホ） */
     @media (max-width: 720px) {
       body {
         overflow-y: auto;
