@@ -1,22 +1,13 @@
-(async () => {
-  async function loadThree(){
-    try {
-      return await import('https://unpkg.com/three@0.160.1/build/three.module.js');
-    } catch (e) {
-      await new Promise((resolve, reject) => {
-        const s = document.createElement('script');
-        s.src = 'https://unpkg.com/three@0.160.1/build/three.min.js';
-        s.onload = resolve;
-        s.onerror = reject;
-        document.head.appendChild(s);
-      });
-      if (!window.THREE) throw new Error('THREE not available');
-      return window.THREE;
-    }
+async function loadThree(){
+  try{ return await import('https://unpkg.com/three@0.160.1/build/three.module.js'); }
+  catch(e){
+    await new Promise((res,rej)=>{ const s=document.createElement('script'); s.src='https://unpkg.com/three@0.160.1/build/three.min.js'; s.onload=res; s.onerror=rej; document.head.appendChild(s); });
+    if(!window.THREE) throw new Error('THREE not available'); return window.THREE;
   }
+}
+const THREE = await loadThree();
 
-  const THREE = await loadThree();
-
+(function() {
   const container = document.getElementById('palindrome-glass-root');
   if (!container) return;
 
@@ -54,8 +45,9 @@
     const FOV               = 40;
     const ROT_X_MIN_DEG     = -10;
     const ROT_X_MAX_DEG     =  55;
-    const ROT_X_MIN         = ROT_X_MIN_DEG * Math.PI / 180;
-    const ROT_X_MAX         = ROT_X_MAX_DEG * Math.PI / 180;
+    const degToRad          = (deg) => deg * Math.PI / 180;
+    const ROT_X_MIN         = degToRad(ROT_X_MIN_DEG);
+    const ROT_X_MAX         = degToRad(ROT_X_MAX_DEG);
     const AUTO_ROTATE_SPEED = 0.01;
     const DRAG_ROTATE_SPEED = 0.005;
 
@@ -104,8 +96,8 @@
       addTextAlongGuide();
 
       // 初期姿勢：やや鳥瞰＋30度傾け
-      glassGroup.rotation.z = 30 * Math.PI / 180;
-      glassGroup.rotation.x = 20 * Math.PI / 180;
+      glassGroup.rotation.z = degToRad(30);
+      glassGroup.rotation.x = degToRad(20);
 
       updateLayout();
       initMouseControls();
@@ -510,5 +502,4 @@
     function onWindowResize() {
       updateLayout();
     }
-
 })();
