@@ -430,6 +430,7 @@
       background: transparent;
       border: 0 solid transparent;
       pointer-events: none;
+      opacity: 0;
     }
 
     .a-3-overlay-text {
