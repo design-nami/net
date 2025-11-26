@@ -430,6 +430,7 @@
       background: transparent;
       border: 0 solid transparent;
       pointer-events: none;
+      opacity: 0;
     }
 
     .a-3-overlay-text {
@@ -446,16 +447,3 @@
       border-width: 4px;
       border-color: var(--green);
     }
-
-
-/* Hide scrollbars for A/B columns (while keeping scrollable) */
-.col-a,
-.col-b {
-  -ms-overflow-style: none; /* IE/Edge */
-  scrollbar-width: none;    /* Firefox */
-}
-
-.col-a::-webkit-scrollbar,
-.col-b::-webkit-scrollbar {
-  display: none;            /* Chrome/Safari */
-}
