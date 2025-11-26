@@ -411,6 +411,9 @@
         border-top: 1px solid #ffffff;
         padding: 16px var(--pad-x) 32px var(--pad-x);
       }
+      .b-card:last-child {
+        border-bottom: none;
+      }
     }
 
     .a-3-wrapper {
@@ -427,7 +430,6 @@
     }
 
     .a-3-overlay {
-      opacity: 0;
       position: absolute;
       inset: 0;
       padding: 12px var(--pad-x);
@@ -435,6 +437,7 @@
       background: transparent;
       border: 0 solid transparent;
       pointer-events: none;
+      opacity: 0;
     }
 
     .a-3-overlay-text {
