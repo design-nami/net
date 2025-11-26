@@ -3,10 +3,18 @@
   if (!container) return;
 
   async function loadThree(){
-    try{ return await import('https://unpkg.com/three@0.160.1/build/three.module.js'); }
-    catch(e){
-      await new Promise((res,rej)=>{ const s=document.createElement('script'); s.src='https://unpkg.com/three@0.160.1/build/three.min.js'; s.onload=res; s.onerror=rej; document.head.appendChild(s); });
-      if(!window.THREE) throw new Error('THREE not available'); return window.THREE;
+    try{
+      return await import('https://unpkg.com/three@0.160.1/build/three.module.js');
+    }catch(e){
+      await new Promise((res,rej)=>{
+        const s=document.createElement('script');
+        s.src='https://unpkg.com/three@0.160.1/build/three.min.js';
+        s.onload=res;
+        s.onerror=rej;
+        document.head.appendChild(s);
+      });
+      if(!window.THREE) throw new Error('THREE not available');
+      return window.THREE;
     }
   }
   const THREE = await loadThree();
@@ -97,8 +105,8 @@
       addTextAlongGuide();
 
       // 初期姿勢：やや鳥瞰＋30度傾け
-      glassGroup.rotation.z = THREE.Math.degToRad(30);
-      glassGroup.rotation.x = THREE.Math.degToRad(20);
+      glassGroup.rotation.z = degToRad(30);
+      glassGroup.rotation.x = degToRad(20);
 
       updateLayout();
       initMouseControls();
