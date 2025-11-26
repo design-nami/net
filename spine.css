@@ -229,6 +229,10 @@
       margin-top: 0;
     }
 
+    .b-card:last-child {
+      border-bottom: 1px solid var(--fg);
+    }
+
     .b-card-img {
       display: block;
       width: 100%;
@@ -423,6 +427,7 @@
     }
 
     .a-3-overlay {
+      opacity: 0;
       position: absolute;
       inset: 0;
       padding: 12px var(--pad-x);
@@ -430,7 +435,6 @@
       background: transparent;
       border: 0 solid transparent;
       pointer-events: none;
-      opacity: 0;
     }
 
     .a-3-overlay-text {
