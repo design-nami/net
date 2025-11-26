@@ -229,10 +229,6 @@
       margin-top: 0;
     }
 
-    .b-card:last-child {
-      border-bottom: 1px solid var(--fg);
-    }
-
     .b-card-img {
       display: block;
       width: 100%;
@@ -339,7 +335,13 @@
       }
     }
 
-        /* <=720px: 縦積みレイアウト（スマホ） */
+    @media (max-width: 960px) {
+      .vline--2 {
+        display: none;
+      }
+    }
+
+    /* <=720px: 縦積みレイアウト（スマホ） */
     @media (max-width: 720px) {
       body {
         overflow-y: auto;
@@ -405,9 +407,6 @@
         border-top: 1px solid #ffffff;
         padding: 16px var(--pad-x) 32px var(--pad-x);
       }
-      .b-card:last-child {
-        border-bottom: none;
-      }
     }
 
     .a-3-wrapper {
@@ -431,7 +430,6 @@
       background: transparent;
       border: 0 solid transparent;
       pointer-events: none;
-      opacity: 0;
     }
 
     .a-3-overlay-text {
@@ -448,3 +446,16 @@
       border-width: 4px;
       border-color: var(--green);
     }
+
+
+/* Hide scrollbars for A/B columns (while keeping scrollable) */
+.col-a,
+.col-b {
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none;    /* Firefox */
+}
+
+.col-a::-webkit-scrollbar,
+.col-b::-webkit-scrollbar {
+  display: none;            /* Chrome/Safari */
+}
