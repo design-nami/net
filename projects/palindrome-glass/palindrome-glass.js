@@ -1,6 +1,24 @@
-(function() {
+(async function() {
   const container = document.getElementById('palindrome-glass-root');
   if (!container) return;
+
+  async function loadThree(){
+    try{
+      return await import('https://unpkg.com/three@0.160.1/build/three.module.js');
+    }catch(e){
+      await new Promise((res,rej)=>{
+        const s=document.createElement('script');
+        s.src='https://unpkg.com/three@0.160.1/build/three.min.js';
+        s.onload=res;
+        s.onerror=rej;
+        document.head.appendChild(s);
+      });
+      if(!window.THREE) throw new Error('THREE not available');
+      return window.THREE;
+    }
+  }
+  const THREE = await loadThree();
+
 
 // =========================================
     //  定数定義（見た目に関わるパラメータ）
@@ -36,8 +54,8 @@
     const FOV               = 40;
     const ROT_X_MIN_DEG     = -10;
     const ROT_X_MAX_DEG     =  55;
-    const ROT_X_MIN         = THREE.Math.degToRad(ROT_X_MIN_DEG);
-    const ROT_X_MAX         = THREE.Math.degToRad(ROT_X_MAX_DEG);
+    const ROT_X_MIN         = degToRad(ROT_X_MIN_DEG);
+    const ROT_X_MAX         = degToRad(ROT_X_MAX_DEG);
     const AUTO_ROTATE_SPEED = 0.02;
     const DRAG_ROTATE_SPEED = 0.005;
 
@@ -86,8 +104,8 @@
       addTextAlongGuide();
 
       // 初期姿勢：やや鳥瞰＋30度傾け
-      glassGroup.rotation.z = THREE.Math.degToRad(30);
-      glassGroup.rotation.x = THREE.Math.degToRad(20);
+      glassGroup.rotation.z = degToRad(30);
+      glassGroup.rotation.x = degToRad(20);
 
       updateLayout();
       initMouseControls();
